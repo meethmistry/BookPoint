@@ -1,0 +1,211 @@
+﻿@model Tuple<BookPoint.Models.LoginViewModel, BookPoint.Models.RegisterViewModel>
+@{
+    ViewData["Title"] = "Login & Register - BooksPoint";
+}
+
+
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>BooksPoint - Sign In</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet" />
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet" />
+    <link href="~/css/LoginRegister.css" rel="stylesheet">
+</head>
+
+<body>
+
+    <div class="floating-elements">
+        <div class="floating-book"><i class="fas fa-book"></i></div>
+        <div class="floating-book"><i class="fas fa-book-open"></i></div>
+        <div class="floating-book"><i class="fas fa-journal-whills"></i></div>
+        <div class="floating-book"><i class="fas fa-book-reader"></i></div>
+    </div>
+
+  
+    <div class="container">
+        <div class="main-container">
+            <div class="left-panel">
+                <div class="logo"><i class="fas fa-book-open"></i></div>
+                <div class="brand-name">BooksPoint</div>
+                <div class="tagline">Your gateway to knowledge</div>
+            </div>
+
+            <div class="right-panel">
+
+                <!-- Inside .right-panel -->
+                <div id="form-container">
+                    <!-- Login Form -->
+                    <div id="login-form">
+                        <h1 class="auth-heading">Welcome Back to BooksPoint</h1>
+                        <h2 class="welcome-title">Sign In</h2>
+                        <!-- Show error here -->
+                        @if (ViewBag.LoginError != null)
+                        {
+                            <div id="error-summary-login" class="text-danger">
+                                @ViewBag.LoginError
+                            </div>
+                        }
+                        <form asp-action="Login" method="post">
+                            <div class="form-group">
+                                <label for="login-email" class="form-label">Email Address</label>
+                                <input type="email" id="login-email" name="Email" class="form-control" placeholder="Enter your email"
+                                       required>
+                            </div>
+
+                            <div class="form-group">
+                                <label for="login-password" class="form-label">Password</label>
+                                <input type="password" id="login-password" name="Password" class="form-control"
+                                       placeholder="Enter your password" required>
+                            </div>
+                            <div class="d-flex justify-content-end mb-3">
+                                <a href="#" class="text-decoration-none small">Forgot password?</a>
+                            </div>
+
+                            <button type="submit" class="login-btn">
+                                <i class="fas fa-sign-in-alt me-2"></i>Sign In
+                            </button>
+
+
+                        </form>
+                    </div>
+
+                    <!-- Register Form -->
+                    <div id="register-form" style="display: none;">
+                        <h2 class="welcome-title">Register</h2>
+                        <div id="error-summary" class="text-danger"></div>
+
+                        <form id="registerForm" asp-action="Register" method="post" novalidate>
+                            <div class="form-group">
+                                <label for="reg-username" class="form-label">Username</label>
+                                <input type="text" id="reg-username" name="UserName" class="form-control"
+                                       placeholder="Enter your username">
+                            </div>
+
+                            <div class="form-group">
+                                <label for="reg-email" class="form-label">Email Address</label>
+                                <input type="email" id="reg-email" name="Email" class="form-control" placeholder="Enter your email">
+                            </div>
+
+                            <div class="form-group">
+                                <label for="reg-password" class="form-label">Password</label>
+                                <input type="password" id="reg-password" name="Password" class="form-control"
+                                       placeholder="Enter your password">
+                            </div>
+
+                            <div class="form-group">
+                                <label for="reg-confirm" class="form-label">Confirm Password</label>
+                                <input type="password" id="reg-confirm" name="ConfirmPassword" class="form-control"
+                                       placeholder="Confirm your password">
+                            </div>
+
+                            <button type="submit" class="login-btn">
+                                <i class="fas fa-user-plus me-2"></i>Register
+                            </button>
+                        </form>
+                    </div>
+
+                <div class="signup-link">
+                    <span id="toggle-text">Don't have an account?</span>
+                    <a href="#" id="toggle-link">Register</a>
+                </div>
+
+            </div>
+        </div>
+    </div>
+
+    <!-- ✅ JS Validation -->
+    <script>
+        document.getElementById("registerForm").addEventListener("submit", function (e) {
+            let errors = [];
+
+            let username = document.getElementById("reg-username").value.trim();
+            let email = document.getElementById("reg-email").value.trim();
+            let password = document.getElementById("reg-password").value;
+            let confirmPassword = document.getElementById("reg-confirm").value;
+
+            // Username validation
+            if (username === "") {
+                errors.push("User name is required.");
+            }
+
+            // Email validation
+            if (email === "") {
+                errors.push("Email is required.");
+            } else {
+                // ✅ Razor-safe regex (double @@)
+                let emailRegex = /^[^\s@@]+@@[^\s@@]+\.[^\s@@]+$/;
+                if (!emailRegex.test(email)) {
+                    errors.push("Enter a valid email address.");
+                }
+            }
+
+            // Password validation
+            if (password === "") {
+                errors.push("Password is required.");
+            } else if (password.length < 6) {
+                errors.push("Password must be at least 6 characters long.");
+            }
+
+            // Confirm Password validation
+            if (confirmPassword === "") {
+                errors.push("Confirm Password is required.");
+            } else if (password !== confirmPassword) {
+                errors.push("Passwords do not match.");
+            }
+
+            // Show errors if any
+            let errorDiv = document.getElementById("error-summary");
+            errorDiv.innerHTML = "";
+            if (errors.length > 0) {
+                e.preventDefault(); // Stop form submission
+                let ul = document.createElement("ul");
+                errors.forEach(function (err) {
+                    let li = document.createElement("li");
+                    li.innerText = err;
+                    ul.appendChild(li);
+                });
+                errorDiv.appendChild(ul);
+            }
+        });
+    </script>
+
+
+
+    <script>
+        const toggleLink = document.getElementById('toggle-link');
+        const toggleText = document.getElementById('toggle-text');
+        const loginForm = document.getElementById('login-form');
+        const registerForm = document.getElementById('register-form');
+
+        toggleLink.addEventListener('click', function (e) {
+            e.preventDefault();
+            const isLoginVisible = loginForm.style.display !== 'none';
+
+            if (isLoginVisible) {
+                loginForm.style.display = 'none';
+                registerForm.style.display = 'block';
+                toggleText.textContent = 'Already have an account?';
+                toggleLink.textContent = 'Sign In';
+            } else {
+                loginForm.style.display = 'block';
+                registerForm.style.display = 'none';
+                toggleText.textContent = "Don't have an account?";
+                toggleLink.textContent = 'Register';
+            }
+        });
+    </script>
+
+
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+
+</html>
+
+@section Scripts {
+    <partial name="_ValidationScriptsPartial" />
+}

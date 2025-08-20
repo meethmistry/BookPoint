@@ -1,0 +1,253 @@
+﻿@{
+    Layout = null;
+}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>BooksPoint Dashboard</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet" />
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet" />
+    <link href="~/css/Dashboard.css" rel="stylesheet">
+</head>
+<style>
+    /* Confirmation Overlay Styles */
+    .confirmation-overlay {
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        background-color: rgba(0, 0, 0, 0.5);
+        z-index: 9999;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+    }
+
+    .confirmation-card {
+        background: white;
+        border-radius: 8px;
+        box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+        max-width: 400px;
+        width: 90%;
+        animation: slideIn 0.3s ease;
+    }
+
+    
+    .card-header {
+        padding: 1rem;
+        border-bottom: 1px solid #dee2e6;
+        border-radius: 8px 8px 0 0;
+    }
+
+    .card-body {
+        padding: 1.5rem;
+    }
+
+    .card-footer {
+        padding: 1rem;
+        border-top: 1px solid #dee2e6;
+        border-radius: 0 0 8px 8px;
+        background-color: #f8f9fa;
+    }
+</style>
+<body>
+    <div class="main-container">
+
+        <!-- Background -->
+        <div class="background-layer"></div>
+
+        <!-- Header - This stays fixed across all tabs -->
+        <div class="title-status">
+            <div class="title-left">
+                <div class="breadcrumb">Page / <span class="current-tab">Dashboard</span></div>
+                <div class="page-title">Dashboard</div>
+            </div>
+            <div class="title-right">
+                <form id="logoutForm" asp-controller="Dashboard" asp-action="Logout" method="post">
+                    @Html.AntiForgeryToken()
+                    <button type="button" class="logout-btn" title="Logout" id="logoutBtn">
+                        <svg class="logout-icon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24">
+                            <path d="M16 13v-2H7V8l-5 4 5 4v-3h9zm3-10H5c-1.1 0-2 .9-2 2v4h2V5h14v14H5v-4H3v4c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2z" />
+                        </svg>
+                    </button>
+                </form>
+
+            </div>
+        </div>
+
+        <!-- Main Layout -->
+        <div class="dashboard-container">
+            <!-- Sidebar - This also stays fixed -->
+            <div class="left-panel">
+                <div class="logo-brand">
+                    <div class="logo"><i class="fas fa-book-open"></i></div>
+                    <div class="brand-name">BooksPoint</div>
+                </div>
+
+                <ul class="menu">
+                    <li class="active" data-page="Overview">
+                        <a href="@Url.Action("Overview", "Dashboard")" class="load-page">Dashboard</a>
+                    </li>
+                    <li data-page="Categories">
+                        <a href="@Url.Action("Categories", "Dashboard")" class="load-page">Categories</a>
+                    </li>
+                    <li data-page="Books">
+                        <a href="@Url.Action("Books", "Dashboard")" class="load-page">Books</a>
+                    </li>
+                    <li data-page="Delivery Agents">
+                        <a href="@Url.Action("DeliveryAgents", "Dashboard")" class="load-page">Delivery Agents</a>
+                    </li>
+                    <li data-page="Orders">
+                        <a href="@Url.Action("Orders", "Dashboard")" class="load-page">Orders</a>
+                    </li>
+                    <li data-page="Customers">
+                        <a href="@Url.Action("Customers", "Dashboard")" class="load-page">Customers</a>
+                    </li>
+                    <li data-page="Walk In Sales">
+                        <a href="@Url.Action("WalkInSales", "Dashboard")" class="load-page">Walk In Sales</a>
+                    </li>
+                    <li data-page="Payments">
+                        <a href="@Url.Action("Payments", "Dashboard")" class="load-page">Payments</a>
+                    </li>
+                    <li data-page="Sales">
+                        <a href="@Url.Action("Sales", "Dashboard")" class="load-page">Sales</a>
+                    </li>
+                </ul>
+            </div>
+
+            <!-- Content Area - Only this part changes when tabs are clicked -->
+            <div class="content-body" id="main-content">
+                <!-- Dynamic content loads here -->
+            </div>
+        </div>
+    </div>
+
+    <!-- Confirmation Dialog - This stays fixed and available on all tabs -->
+    <div id="confirmationOverlay" class="confirmation-overlay" style="display: none;">
+        <div id="logoutCard" class="confirmation-card">
+            <div class="card-header bg-danger text-white">
+                <h5 class="mb-0">
+                    <i class="fas fa-exclamation-triangle"></i>
+                    Confirm Logout
+                </h5>
+            </div>
+            <div class="card-body">
+                <p class="mb-3">Are you sure you want to <strong>Logout</strong>?</p>
+                <p class="text-muted small mb-0">You will be redirected to the Login/Register page.</p>
+            </div>
+            <div class="card-footer text-end">
+                <button type="button" class="btn btn-secondary me-2" id="cancelLogout">Cancel</button>
+                <button type="button" class="btn btn-danger" id="confirmLogout">Logout</button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        (function () {
+          // If server told us a tab, store it just for the next load
+          var serverTab = '@(TempData["CurrentTab"] as string ?? "")';
+          if (serverTab) {
+              localStorage.setItem("currentTab", serverTab);
+          }
+        })();
+    </script>
+
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+
+    <script>
+        // Logout confirmation functionality - This runs once and works for all tabs
+        document.addEventListener('DOMContentLoaded', function() {
+            const logoutBtn = document.getElementById("logoutBtn");
+            const confirmationOverlay = document.getElementById("confirmationOverlay");
+            const cancelLogout = document.getElementById("cancelLogout");
+            const confirmLogout = document.getElementById("confirmLogout");
+            const logoutForm = document.getElementById("logoutForm");
+
+            // Show confirmation dialog when logout button is clicked
+            logoutBtn.addEventListener("click", function (e) {
+                e.preventDefault();
+                confirmationOverlay.style.display = "flex";
+            });
+
+            // Hide confirmation dialog when cancel is clicked
+            cancelLogout.addEventListener("click", function () {
+                confirmationOverlay.style.display = "none";
+            });
+
+            // Submit logout form when confirm is clicked
+            confirmLogout.addEventListener("click", function () {
+                logoutForm.submit();
+            });
+
+            // Hide confirmation dialog when clicking outside of it
+            confirmationOverlay.addEventListener("click", function (e) {
+                if (e.target === confirmationOverlay) {
+                    confirmationOverlay.style.display = "none";
+                }
+            });
+
+            // Handle escape key to close dialog
+            document.addEventListener("keydown", function (e) {
+                if (e.key === "Escape" && confirmationOverlay.style.display === "flex") {
+                    confirmationOverlay.style.display = "none";
+                }
+            });
+        });
+    </script>
+
+    <script>
+        $(function () {
+
+          function loadTab(pageName, url, clearAfterUse) {
+            $("#main-content").html("<p>Loading...</p>");
+            $.get(url).done(function (html) {
+              $("#main-content").html(html);
+
+              // highlight menu + set titles
+              $(".menu li.active").removeClass("active");
+              $(".menu li[data-page='" + pageName + "']").addClass("active");
+              $(".current-tab").text(pageName);
+              $(".page-title").text(pageName);
+
+              if (clearAfterUse) {
+                // clear only after successful load
+                if (localStorage.getItem("currentTab") === pageName) {
+                  localStorage.removeItem("currentTab");
+                } else {
+                  localStorage.removeItem("currentTab");
+                }
+              }
+            }).fail(function() {
+              $("#main-content").html("<p>Error loading content. Please try again.</p>");
+            });
+          }
+
+          // Menu clicks (DO NOT store currentTab here)
+          $(".menu li a").on("click", function (e) {
+            e.preventDefault();
+            var $li = $(this).parent();
+            loadTab($li.data("page"), $(this).attr("href"), false);
+          });
+
+          // On first load, prefer saved tab from localStorage
+          var savedTab = localStorage.getItem("currentTab");
+          if (savedTab) {
+            var $saved = $(".menu li[data-page='" + savedTab + "'] a");
+            if ($saved.length) {
+              loadTab(savedTab, $saved.attr("href"), true); // clear after use
+              return; // stop, don't also load default
+            }
+          }
+
+          // Otherwise load default active
+          var $active = $(".menu li.active");
+          if ($active.length) {
+            loadTab($active.data("page"), $active.find("a").attr("href"), false);
+          }
+        });
+    </script>
+</body>
+</html>
