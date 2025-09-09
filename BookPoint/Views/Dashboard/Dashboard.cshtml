@@ -11,49 +11,50 @@
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet" />
     <link href="~/css/Dashboard.css" rel="stylesheet">
 </head>
-<style>
-    /* Confirmation Overlay Styles */
-    .confirmation-overlay {
-        position: fixed;
-        top: 0;
-        left: 0;
-        width: 100%;
-        height: 100%;
-        background-color: rgba(0, 0, 0, 0.5);
-        z-index: 9999;
-        display: flex;
-        justify-content: center;
-        align-items: center;
-    }
 
-    .confirmation-card {
-        background: white;
-        border-radius: 8px;
-        box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
-        max-width: 400px;
-        width: 90%;
-        animation: slideIn 0.3s ease;
-    }
-
-    
-    .card-header {
-        padding: 1rem;
-        border-bottom: 1px solid #dee2e6;
-        border-radius: 8px 8px 0 0;
-    }
-
-    .card-body {
-        padding: 1.5rem;
-    }
-
-    .card-footer {
-        padding: 1rem;
-        border-top: 1px solid #dee2e6;
-        border-radius: 0 0 8px 8px;
-        background-color: #f8f9fa;
-    }
-</style>
 <body>
+    <style>
+        /* Confirmation Overlay Styles */
+        .confirmation-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.5);
+            z-index: 9999;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+
+        .confirmation-card {
+            background: white;
+            border-radius: 8px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+            max-width: 400px;
+            width: 90%;
+            animation: slideIn 0.3s ease;
+        }
+
+
+        .card-header {
+            padding: 1rem;
+            border-bottom: 1px solid #dee2e6;
+            border-radius: 8px 8px 0 0;
+        }
+
+        .card-body {
+            padding: 1.5rem;
+        }
+
+        .card-footer {
+            padding: 1rem;
+            border-top: 1px solid #dee2e6;
+            border-radius: 0 0 8px 8px;
+            background-color: #f8f9fa;
+        }
+    </style>
     <div class="main-container">
 
         <!-- Background -->
@@ -92,13 +93,13 @@
                         <a href="@Url.Action("Overview", "Dashboard")" class="load-page">Dashboard</a>
                     </li>
                     <li data-page="Categories">
-                        <a href="@Url.Action("Categories", "Dashboard")" class="load-page">Categories</a>
+                        <a href="@Url.Action("Categories", "Category")" class="load-page">Categories</a>
                     </li>
                     <li data-page="Books">
-                        <a href="@Url.Action("Books", "Dashboard")" class="load-page">Books</a>
+                        <a href="@Url.Action("Index", "Books")" class="load-page">Books</a>
                     </li>
                     <li data-page="Delivery Agents">
-                        <a href="@Url.Action("DeliveryAgents", "Dashboard")" class="load-page">Delivery Agents</a>
+                        <a href="@Url.Action("DeliveryAgents", "Agent")" class="load-page">Delivery Agents</a>
                     </li>
                     <li data-page="Orders">
                         <a href="@Url.Action("Orders", "Dashboard")" class="load-page">Orders</a>
@@ -147,7 +148,6 @@
 
     <script>
         (function () {
-          // If server told us a tab, store it just for the next load
           var serverTab = '@(TempData["CurrentTab"] as string ?? "")';
           if (serverTab) {
               localStorage.setItem("currentTab", serverTab);
@@ -211,7 +211,7 @@
               $(".menu li[data-page='" + pageName + "']").addClass("active");
               $(".current-tab").text(pageName);
               $(".page-title").text(pageName);
-
+              console.log(pageName);
               if (clearAfterUse) {
                 // clear only after successful load
                 if (localStorage.getItem("currentTab") === pageName) {

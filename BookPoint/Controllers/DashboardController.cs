@@ -2,6 +2,7 @@
 using BookPoint.Models;
 using BookPoint.Services;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
 
 namespace BookPoint.Controllers
 {
@@ -16,61 +17,39 @@ namespace BookPoint.Controllers
 
         public IActionResult Dashboard()
         {
+    //        // Folder path
+    //        string folderPath = Path.Combine(Directory.GetCurrentDirectory(), "wwwroot", "uploads", "books");
+
+    //        // List of files to keep
+    //        var filesToKeep = new HashSet<string>
+    //{
+    //    "ea050166-5648-42fd-8b17-86a818e3a175.jpg",
+    //    "c3724553-c6a8-41da-897e-fb23b0edf693.jpg",
+    //    "ad136c08-f931-4534-b52a-807c3d33306d.jpeg",
+    //    "824a9417-c222-40c0-b0f9-7a35427abfb7.jpg",
+    //    "f9f8953a-8f23-4698-8bd8-da8458c8f571.jpeg"
+    //};
+
+    //        if (Directory.Exists(folderPath))
+    //        {
+    //            var allFiles = Directory.GetFiles(folderPath);
+
+    //            foreach (var filePath in allFiles)
+    //            {
+    //                string fileName = Path.GetFileName(filePath);
+
+    //                if (!filesToKeep.Contains(fileName))
+    //                {
+    //                    System.IO.File.Delete(filePath); // Delete the file
+    //                    Console.WriteLine($"Deleted: {fileName}");
+    //                }
+    //            }
+    //        }
+            TempData.Remove("currentView");
             return View();
         }
 
         public IActionResult Overview()
-        {
-            return PartialView();
-        }
-
-        // Categories
-        public IActionResult Categories()
-        {
-            var categories = _dbContext.Categories.ToList();
-            return PartialView(categories);
-        }
-
-        [HttpPost]
-        [ValidateAntiForgeryToken]
-        public IActionResult AddOrEditCategory(CategoryModel category)
-        {
-            if (category.Id == 0)
-                _dbContext.Categories.Add(category);
-            else
-                _dbContext.Categories.Update(category);
-
-            _dbContext.SaveChanges();
-
-            TempData["CurrentTab"] = "Categories";
-
-            return RedirectToAction(nameof(Dashboard));
-        }
-
-        [HttpPost]
-        [ValidateAntiForgeryToken]
-        public IActionResult DeleteCategory(int id)
-        {
-            var entity = _dbContext.Categories.Find(id);
-            if (entity == null) return NotFound();
-
-            _dbContext.Categories.Remove(entity);
-            _dbContext.SaveChanges();
-
-            TempData["CurrentTab"] = "Categories";
-            return RedirectToAction(nameof(Dashboard));
-        }
-
-
-
-        // Books
-        public IActionResult Books()
-        {
-            return PartialView();
-        }
-
-        // Delivery Agents
-        public IActionResult DeliveryAgents()
         {
             return PartialView();
         }

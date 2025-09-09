@@ -1,0 +1,113 @@
+﻿@model IEnumerable<BookPoint.Models.CategoryModel>
+
+<div class="page-content">
+    <link rel="stylesheet" href="~/css/Categories.css" />
+    <script src="~/js/Categories.js"></script>
+    <!-- Add Category Form -->
+    <div class="card mb-4">
+        <div class="card-header">
+            <h5>Add New Category</h5>
+        </div>
+        <div class="card-body">
+            @if (TempData["CategoryError"] != null)
+            {
+                <div class="alert alert-danger" id="error-summary-category">
+                    @TempData["CategoryError"]
+                </div>
+            }
+
+
+            <form class="row g-3" asp-action="AddOrEditCategory" method="post" id="categoryForm">
+                @Html.AntiForgeryToken()
+                <input type="hidden" id="CategoryId" name="Id" />
+
+                <div class="col-md-8">
+                    <label for="Name" class="form-label">Category Name</label>
+                    <input type="text" class="form-control" id="Name"
+                           name="Name" placeholder="Enter category name" required>
+                </div>
+                <div class="col-md-4 d-flex align-items-end">
+                    <button type="submit" id="submitBtn" class="btn btn-primary">Add Category</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- Categories Table -->
+    <div class="card">
+        <div class="card-header d-flex justify-content-between align-items-center">
+            <h5 class="mb-0">Categories List</h5>
+            <input type="text" id="searchCategory" class="form-control w-25"
+                   placeholder="Search categories..." />
+        </div>
+        <div class="card-body">
+            <div class="table-responsive">
+                <table class="table table-striped table-hover" id="categoriesTable">
+                    <thead class="table-dark">
+                        <tr>
+                            <th>#</th>
+                            <th>Category Name</th>
+                            <th>Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @{
+                            var index = 1;
+                        }
+                        @foreach (var category in Model)
+                        {
+                            <tr>
+                                <td>@index</td>
+                                <td class="category-name">@category.Name</td>
+                                <td>
+                                    <button type="button"
+                                            class="btn btn-sm btn-outline-primary edit-btn"
+                                            data-id="@category.Id"
+                                            data-name="@Html.Raw(category.Name)">
+                                        Edit
+                                    </button>
+
+                                    <button type="button"
+                                            class="btn btn-sm btn-outline-danger delete-btn"
+                                            data-id="@category.Id"
+                                            data-name="@Html.Raw(category.Name)">
+                                        Delete
+                                    </button>
+                                </td>
+                            </tr>
+                            index++;
+                        }
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+
+    <form id="deleteForm" asp-action="DeleteCategory" method="post" style="display: none;">
+        @Html.AntiForgeryToken()
+        <input type="hidden" id="deleteId" name="id" />
+    </form>
+
+</div>
+
+<div id="confirmationOverlay" class="confirmation-overlay" style="display: none;">
+    <div id="deleteCard" class="confirmation-card">
+        <div class="card-header bg-danger text-white">
+            <h5 class="mb-0">
+                <i class="fas fa-exclamation-triangle"></i>
+                Confirm Deletion
+            </h5>
+        </div>
+        <div class="card-body">
+            <p class="mb-3">Are you sure you want to delete the category "<strong id="categoryToDelete"></strong>"?</p>
+            <p class="text-muted small mb-0">This action cannot be undone.</p>
+        </div>
+        <div class="card-footer text-end">
+            <button type="button" class="btn btn-secondary me-2" id="cancelDelete">Cancel</button>
+            <button type="button" class="btn btn-danger" id="confirmDelete">Delete</button>
+        </div>
+    </div>
+</div>
+
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+

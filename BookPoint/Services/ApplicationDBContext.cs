@@ -11,7 +11,8 @@ namespace BookPoint.Services
 
         public DbSet<UserModel> Users { get; set; } = null!;
         public DbSet<CustomerModel> Customers { get; set; } = null!;
-        public DbSet<CategoryModel> Categories { get; set; } = null;
+        public DbSet<CategoryModel> Categories { get; set; } = null!;
         public DbSet<AgentModel> Agents { get; set; } = null!;
+        public DbSet<BookModel> Books { get; set; } = null!;
     }
 }

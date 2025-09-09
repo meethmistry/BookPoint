@@ -1,144 +1,124 @@
-﻿<div class="page-content">
-    <!-- Add Book Form -->
+﻿@model BookPoint.Models.BookModel
+
+<link href="https://cdn.jsdelivr.net/npm/bootstrap-icons/font/bootstrap-icons.css" rel="stylesheet">
+<link rel="stylesheet" href="~/css/BooksForm.css" />
+<script src="~/js/BooksForm.js"></script>
+<div class="page-content">
     <div class="card">
-        <div class="card-header">
-            <h5>Add New Book</h5>
+        <div class="card-header d-flex align-items-center">
+            <a href="javascript:void(0)" id="backToBooks" class="me-3 text-decoration-none text-dark fw-bold">
+                <i class="bi bi-arrow-left fs-5"></i>
+            </a>
+            <h5 class="mb-0" id="formTitle">
+                Add New Book
+            </h5>
+
         </div>
+
         <div class="card-body">
-            <form class="row g-3">
+            @if (TempData["BookError"] != null)
+            {
+                <div class="alert alert-danger" id="error-summary-category" style="padding:0.5rem 1rem; line-height:1.2;">
+                    @TempData["BookError"]
+                </div>
+            }
 
-                <!-- Book Name -->
-                <div class="col-md-6">
-                    <label for="bookName" class="form-label">Book Name</label>
-                    <input type="text" class="form-control" id="bookName" placeholder="Enter book name" required>
+            <form asp-action="AddOrEditBook" style="margin-top:8px;" class="needs-validation row g-3" method="post" enctype="multipart/form-data" onsubmit="return validateForm()">
+                <input type="hidden" asp-for="Id" />
+
+
+                <div class="row">
+
+                    <div class="col-md-2">
+                        <label asp-for="CoverImagePath" class="form-label">Book Cover Image <span class="text-danger">*</span></label>
+                        <div class="cover-preview-container" onclick="document.getElementById('coverImage').click()">
+                            <button type="button" id="cancelImage" class="btn btn-sm btn-danger" onclick="removeImage(event)" style="display:none;">X</button>
+                            <img id="coverPreview" src="" data-image="@(Model?.CoverImagePath ?? "")" alt="Cover Preview" class="img-thumbnail" style="display:none;">
+                            <i id="previewPlaceholder" class="bi bi-image" style="font-size: 2rem; color: #6c757d;"></i>
+                        </div>
+                        <input type="file" name="CoverImageFile" class="d-none" id="coverImage" accept="image/*" onchange="previewCover(this)">
+                        <!-- Remove the hidden field as it's causing confusion -->
+                        <span id="coverImageValidation" class="text-danger small" style="display:none;">Cover Image is required</span>
+                    </div>
+
+                    <div class="col-md-5">
+                        <div class="mb-3">
+                            <label asp-for="BookName" class="form-label">Book Name <span class="text-danger">*</span></label>
+                            <input asp-for="BookName" class="form-control" placeholder="Enter book name" />
+                            <span asp-validation-for="BookName" class="text-danger small"></span>
+                        </div>
+
+                        <div class="mb-3">
+                            <label asp-for="CategoryId" class="form-label">
+                                Category <span class="text-danger">*</span>
+                            </label>
+                            <select asp-for="CategoryId" class="form-select">
+                                <option value="">-- Select Category --</option>
+                                @foreach (var category in ViewBag.Categories)
+                                {
+                                    <option value="@category.Id">@category.Name</option>
+                                }
+                            </select>
+                            <span asp-validation-for="CategoryId" class="text-danger small"></span>
+                        </div>
+                    </div>
+
+                    <div class="col-md-5">
+                        <div class="mb-3">
+                            <label asp-for="AuthorName" class="form-label">Author Name</label>
+                            <input asp-for="AuthorName" class="form-control" placeholder="Enter author name" />
+                            <span asp-validation-for="AuthorName" class="text-danger small"></span>
+                        </div>
+
+                        <div class="mb-3">
+                            <label asp-for="Quantity" class="form-label">Quantity <span class="text-danger">*</span></label>
+                            <input asp-for="Quantity" class="form-control" placeholder="Enter quantity" />
+                            <span asp-validation-for="Quantity" class="text-danger small"></span>
+                        </div>
+                    </div>
                 </div>
 
-                <!-- Author Name -->
-                <div class="col-md-6">
-                    <label for="authorName" class="form-label">Author Name</label>
-                    <input type="text" class="form-control" id="authorName" placeholder="Enter author name" required>
+                <div class="col-12 mb-3">
+                    <label asp-for="Description" class="form-label">Description</label>
+                    <textarea asp-for="Description" class="form-control" rows="3" placeholder="Enter book description"></textarea>
+                    <span asp-validation-for="Description" class="text-danger small"></span>
                 </div>
 
-                <!-- Category -->
-                <div class="col-md-6">
-                    <label for="category" class="form-label">Category</label>
-                    <select class="form-select" id="category" required>
-                        <option value="">-- Select Category --</option>
-                        <option value="1">Fiction</option>
-                        <option value="2">Science</option>
-                        <option value="3">History</option>
-                    </select>
-                </div>
-
-                <!-- Quantity -->
-                <div class="col-md-6">
-                    <label for="qty" class="form-label">Quantity</label>
-                    <input type="number" class="form-control" id="qty" placeholder="Enter quantity" required>
-                </div>
-
-                <!-- Description -->
                 <div class="col-12">
-                    <label for="description" class="form-label">Description</label>
-                    <textarea class="form-control" id="description" rows="3" placeholder="Enter book description"></textarea>
+                    <div class="row">
+                        <div class="col-md-4 mb-3">
+                            <label asp-for="PurchasePrice" class="form-label">Purchase Price <span class="text-danger">*</span></label>
+                            <input asp-for="PurchasePrice" class="form-control" placeholder="Enter purchase price" />
+                            <span asp-validation-for="PurchasePrice" class="text-danger small"></span>
+                        </div>
+
+                        <div class="col-md-4 mb-3">
+                            <label asp-for="SalesPrice" class="form-label">Sales Price <span class="text-danger">*</span></label>
+                            <input asp-for="SalesPrice" class="form-control" placeholder="Enter sales price" />
+                            <span asp-validation-for="SalesPrice" class="text-danger small"></span>
+                        </div>
+
+                        <div class="col-md-4 mb-3">
+                            <label asp-for="SamplePdfFile" class="form-label">Sample PDF <span class="text-danger">*</span></label>
+                            <input type="file" asp-for="SamplePdfFile" class="form-control" accept="application/pdf" />
+                            <span asp-validation-for="SamplePdfFile" class="text-danger small"></span>
+                        </div>
+                    </div>
                 </div>
 
-                <!-- Purchase Price -->
-                <div class="col-md-4">
-                    <label for="purchasePrice" class="form-label">Purchase Price</label>
-                    <input type="number" class="form-control" id="purchasePrice" placeholder="Enter purchase price" required>
-                </div>
-
-                <!-- Sales Price -->
-                <div class="col-md-4">
-                    <label for="salesPrice" class="form-label">Sales Price</label>
-                    <input type="number" class="form-control" id="salesPrice" placeholder="Enter sales price" required>
-                </div>
-
-                <!-- Profit (auto calc) -->
-                <div class="col-md-4">
-                    <label for="profit" class="form-label">Profit per Book</label>
-                    <input type="text" class="form-control" id="profit" readonly>
-                </div>
-
-                <!-- Cover Image + Preview -->
-                <div class="col-md-6">
-                    <label for="coverImage" class="form-label">Cover Image</label>
-                    <input class="form-control" type="file" id="coverImage" accept="image/*" onchange="previewCoverImage(event)">
-                </div>
-
-                <div class="col-md-6 d-flex align-items-center justify-content-center">
-                    <img id="coverPreview" src="" alt="Cover Preview" class="img-thumbnail" style="max-height: 150px; display: none;">
-                </div>
-
-
-                <!-- Submit -->
-                <div class="col-12">
-                    <button type="submit" class="btn btn-primary">Add Book</button>
+                <div class="col-12 d-flex justify-content-start mt-3">
+                    <button type="submit" class="btn btn-primary">Save Book</button>
+                    <button type="reset" class="btn btn-secondary ms-3" onclick="clearForm()">Cancel</button>
                 </div>
             </form>
         </div>
     </div>
 </div>
+<script src="~/lib/jquery/dist/jquery.min.js"></script>
+<script src="~/lib/jquery-validation/dist/jquery.validate.min.js"></script>
+<script src="~/lib/jquery-validation-unobtrusive/jquery.validate.unobtrusive.min.js"></script>
 
-<script>
-    // Auto-calc profit per book
-    document.getElementById('salesPrice').addEventListener('input', calcProfit);
-    document.getElementById('purchasePrice').addEventListener('input', calcProfit);
 
-    function calcProfit() {
-        let purchase = parseFloat(document.getElementById('purchasePrice').value) || 0;
-        let sales = parseFloat(document.getElementById('salesPrice').value) || 0;
-        document.getElementById('profit').value = (sales - purchase).toFixed(2);
-    }
-
-        function previewCoverImage(event) {
-        const preview = document.getElementById('coverPreview');
-        const file = event.target.files[0];
-
-        if (file) {
-            const reader = new FileReader();
-            reader.onload = function(e) {
-                preview.src = e.target.result;
-                preview.style.display = "block";
-            }
-            reader.readAsDataURL(file);
-        } else {
-            preview.src = "";
-            preview.style.display = "none";
-        }
-    }
-
-</script>
-
-<style>
-    .page-content {
-        padding: 0px;
-    }
-
-    .card {
-        border: 1px solid #dee2e6;
-        border-radius: 0.375rem;
-        box-shadow: 0 0.125rem 0.25rem rgba(0, 0, 0, 0.075);
-    }
-
-    .card-header {
-        background-color: #f8f9fa;
-        border-bottom: 1px solid #dee2e6;
-        padding: 0.5rem 1.25rem;
-    }
-
-    .btn-primary {
-        background-color: #0d6efd;
-        border-color: #0d6efd;
-    }
-
-    .form-control, .form-select {
-        border-radius: 0.25rem;
-    }
-
-    #coverPreview {
-        border-radius: 8px;
-        box-shadow: 0 2px 6px rgba(0,0,0,0.15);
-    }
-
-</style>
+@section Scripts {
+    <partial name="_ValidationScriptsPartial" />
+}

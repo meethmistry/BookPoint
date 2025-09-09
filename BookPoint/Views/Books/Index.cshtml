@@ -1,0 +1,198 @@
+﻿@model List<BookPoint.Models.BookModel>
+
+@{
+    ViewData["Title"] = "Books";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+<link rel="stylesheet" href="~/css/Books.css" />
+<script src="~/js/Books.js"></script>
+
+<div class="page-content" id="main-content">
+    <div class="card">
+        <div class="card-header d-flex justify-content-between align-items-center">
+            <h5 class="mb-0">Books</h5>
+
+            <div class="d-flex gap-3">
+                <select class="form-select form-select-sm w-auto" id="filterCategory">
+                    <option value="">-- Select Category --</option>
+                    @foreach (var category in ViewBag.Categories)
+                    {
+                        <option value="@category.Id">@category.Name</option>
+                    }
+                </select>
+
+                <input type="text" id="searchName" class="form-control form-control-sm search-input" placeholder="Search by book name">
+                <button type="button" class="btn btn-primary w-50" id="addBookBtn">+ Add New Book</button>
+            </div>
+        </div>
+
+        <div class="card-body">
+            <div class="row">
+                @if (Model != null && Model.Any())
+                {
+                    foreach (var book in Model)
+                    {
+                        <div class="col-md-4 mb-2">
+                            <div class="card-Book">
+                                <img src="@(!string.IsNullOrEmpty(book.CoverImagePath) ? Url.Content(book.CoverImagePath) : "~/images/no-image.png")"
+                                     alt="Cover" class="book-cover" />
+                                <div class="book-details">
+                                    <div class="book-title">@book.BookName</div>
+                                    <div class="book-author"><strong>Author:</strong> @(!string.IsNullOrEmpty(book.AuthorName) ? book.AuthorName : "N/A")</div>
+                                    <div class="book-CategoryId" style="display:none;">@book.CategoryId</div>
+                                    <div class="book-price"><strong>Price:</strong> ₹@book.SalesPrice.ToString("F2")</div>
+
+              
+
+                                    <div class="book-actions mt-2">
+                                        <button type="button" class="btn btn-primary btn-sm more-details-btn"
+                                                data-id="@book.Id"
+                                                data-name="@book.BookName"
+                                                data-author="@(!string.IsNullOrEmpty(book.AuthorName) ? book.AuthorName : "N/A")"
+                                                data-categoryid="@book.CategoryId"
+                                                data-categoryname="@book.Category.Name"
+                                                data-description="@(!string.IsNullOrEmpty(book.Description) ? book.Description : "N/A")"
+                                                data-purchase="@book.PurchasePrice"
+                                                data-sales="@book.SalesPrice"
+                                                data-profit="@book.ProfitPerBook"
+                                                data-quantity="@book.Quantity"
+                                                data-created="@book.CreatedAt.ToString("dd MMM yyyy")"
+                                                data-updated="@book.LastUpdatedAt.ToString("dd MMM yyyy")"
+                                                data-cover="@(!string.IsNullOrEmpty(book.CoverImagePath) ? Url.Content(book.CoverImagePath) : Url.Content("~/images/no-image.png"))"
+                                                data-pdf="@(!string.IsNullOrEmpty(book.SamplePdfPath) ? Url.Content(book.SamplePdfPath) : "")">
+                                            More
+                                        </button>
+
+                                        <button type="button" class="btn btn-success btn-sm editBookBtn"
+                                                data-id="@book.Id"
+                                                data-name="@book.BookName"
+                                                data-author="@(!string.IsNullOrEmpty(book.AuthorName) ? book.AuthorName : "N/A")"
+                                                data-category="@book.Category.Id"
+                                                data-description="@(!string.IsNullOrEmpty(book.Description) ? book.Description : "N/A")"
+                                                data-purchase="@book.PurchasePrice"
+                                                data-sales="@book.SalesPrice"
+                                                data-profit="@book.ProfitPerBook"
+                                                data-quantity="@book.Quantity"
+                                                data-cover="@(!string.IsNullOrEmpty(book.CoverImagePath) ? Url.Content(book.CoverImagePath) : Url.Content("~/images/no-image.png"))"
+                                                data-pdf="@(!string.IsNullOrEmpty(book.SamplePdfPath) ? Url.Content(book.SamplePdfPath) : "")">
+                                            Edit
+                                        </button>
+
+                                        <button type="button" class="btn btn-sm btn-danger openDeleteModal"
+                                                data-id="@book.Id"
+                                                data-name="@book.BookName">
+                                            Delete
+                                        </button>
+                                        <form id="deleteBookForm" method="post" asp-action="DeleteBook" asp-controller="Books">
+                                            <input type="hidden" id="deleteBookId" name="id" />
+                                            @Html.AntiForgeryToken()
+                                        </form>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    }
+                }
+                else
+                {
+                    <div class="col-12">
+                        <p class="text-muted">No books available...</p>
+                    </div>
+                }
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Book Details Modal -->
+<div class="modal fade" id="bookDetailsModal" tabindex="-1" aria-labelledby="bookDetailsLabel" aria-hidden="true">
+    <div class="modal-dialog modal-lg modal-dialog-centered">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="bookDetailsLabel">Book Details</h5>
+                <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+
+            <div class="modal-body">
+                <div class="row g-3">
+                    <div class="col-md-4 text-center">
+                        <img id="modalCoverImage" src="~/images/no-image.png" class="img-fluid rounded" alt="Cover Image">
+                        <div class="mt-3" id="modalPdfWrapper" style="display:none;">
+                            <div class="border rounded p-3 bg-light d-flex align-items-center shadow-sm">
+                                <i class="bi bi-file-earmark-pdf text-danger fs-3 me-3"></i>
+                                <div>
+                                    <p class="mb-1 fw-bold text-dark">Sample PDF Available</p>
+                                    <a id="modalPdfLink" href="#" target="_blank"
+                                       class="btn btn-sm btn-danger d-flex align-items-center gap-2">
+                                        <i class="bi bi-eye"></i> View PDF
+                                    </a>
+                                </div>
+                            </div>
+                        </div>
+
+                    </div>
+
+                    <div class="col-md-8">
+                        <h4 id="modalBookName" class="mb-3">Book Name</h4>
+                        <div class="row">
+                            <div class="col-sm-6">
+                                <p><strong>Author:</strong> <span id="modalAuthorName" class="text-muted">N/A</span></p>
+                                <p><strong>Category:</strong> <span id="modalCategoryName" class="text-muted">N/A</span></p>
+                                <p><strong>Purchase Price:</strong> ₹<span id="modalPurchasePrice" class="text-success">0.00</span></p>
+                                <p><strong>Sales Price:</strong> ₹<span id="modalSalesPrice" class="text-primary">0.00</span></p>
+                            </div>
+                            <div class="col-sm-6">
+                                <p><strong>Profit per Book:</strong> ₹<span id="modalProfit" class="text-warning">0.00</span></p>
+                                <p><strong>Quantity:</strong> <span id="modalQuantity" class="badge bg-secondary">0</span></p>
+                                <p><strong>Created:</strong> <span id="modalCreatedAt" class="text-muted">-</span></p>
+                                <p><strong>Updated:</strong> <span id="modalLastUpdated" class="text-muted">-</span></p>
+                            </div>
+                        </div>
+                        <div class="mt-3">
+                            <p><strong>Description:</strong></p>
+                            <p id="modalDescription" class="text-muted">No description available.</p>
+                        </div>
+                    
+                    </div>
+                </div>
+            </div>
+
+            <div class="modal-footer">
+                <button type="button" class="btn btn-success editBookBtnMore">Edit</button>
+                <a id="deleteBookBtn" href="#" class="btn btn-danger">Delete</a>
+                <form id="deleteBookForm" method="post" asp-action="DeleteBook" asp-controller="Books">
+                    @Html.AntiForgeryToken()
+                    <input type="hidden" id="deleteBookId" name="id" value="">
+                </form>
+                <button type="button" class="btn btn-secondary" onclick="closeModal()">Close</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Confirmation Overlay -->
+<div id="confirmOverlay" class="confirm-overlay">
+    <div id="confirmBox" class="confirm-box">
+        <div class="confirm-header bg-danger text-white">
+            <h5 class="mb-0">
+                <i class="fas fa-exclamation-triangle"></i>
+                Confirm Book Deletion
+            </h5>
+        </div>
+        <div class="confirm-body">
+            <p class="mb-3">
+                Are you sure you want to delete the book
+                "<strong id="bookToDelete">Book Name</strong>"?
+            </p>
+            <p class="text-muted small mb-0">This action cannot be undone.</p>
+        </div>
+        <div class="confirm-footer text-end">
+            <button type="button" class="btn btn-secondary me-2" id="cancelDelete">Cancel</button>
+            <button type="button" class="btn btn-danger" id="confirmDeleteFinal" data-id="">Delete</button>
+        </div>
+    </div>
+</div>
+
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>

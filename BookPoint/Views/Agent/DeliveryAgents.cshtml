@@ -1,0 +1,227 @@
+﻿@model BookPoint.Models.UserAgentViewModel
+
+<div class="page-content">
+	<link rel="stylesheet" href="~/css/Agent.css" />
+	<script src="~/js/Agent.js"></script>
+	<div class="row gx-2" style="--bs-gutter-x:10px;">
+		<!-- Left: Agents List -->
+		<div class="col-md-8">
+			<div class="card">
+				<div class="card-header d-flex justify-content-between align-items-center">
+					<h5 class="mb-0">Agents</h5>
+
+					<div class="d-flex gap-2">
+						<select class="form-select form-select-sm w-auto" id="filterStatus">
+							<option value="">All</option>
+							<option value="active">Active</option>
+							<option value="inactive">Inactive</option>
+						</select>
+
+						<input type="text" id="searchInput" class="form-control form-control-sm"
+							   style="width: 300px;" placeholder="Search by username or email" />
+					</div>
+				</div>
+
+				<div class="card-body" id="agentsContainer">
+					<!-- Agents Grid -->
+					<div class="row agents-grid-container">
+						@if (Model != null && Model.Agents.Any())
+						{
+							foreach (var agent in Model.Agents)
+							{
+								var user = Model.Users.FirstOrDefault(u => u.Id == agent.UID);
+								if (user != null)
+								{
+									<div class="col-md-6 mb-4 agent-card-wrapper">
+										<div class="card agent-card">
+											<div class="card-body">
+												<h5 class="card-title agent-username">@agent.UserName</h5>
+												<div class="agent-info">
+													<p><strong>Email:</strong> <span class="agent-email">@user.Email</span></p>
+													<p><strong>Phone:</strong> <span>@agent.Phone</span></p>
+													<p><strong>Password:</strong> <span>@user.Password</span></p>
+													<p class="agent-status">
+														<strong>Status:</strong>
+														<span class="@(user.IsActive ? "text-success" : "text-warning")">
+															@(user.IsActive ? "Active" : "Inactive")
+														</span>
+													</p>
+												</div>
+
+												<div class="d-flex gap-2">
+													<a href="javascript:void(0);"
+													   class="btn btn-sm status-btn @(user.IsActive ? "btn-success" : "btn-secondary")"
+													   data-id="@agent.Id"
+													   data-username="@agent.UserName"
+													   data-isactive="@(user.IsActive.ToString().ToLower())">
+														@(user.IsActive ? "Active" : "Inactive")
+													</a>
+
+													<a href="javascript:void(0);"
+													   class="btn btn-sm btn-primary edit-btn"
+													   data-id="@agent.Id"
+													   data-username="@agent.UserName"
+													   data-email="@user.Email"
+													   data-phone="@agent.Phone"
+													   data-password="@user.Password">
+														Edit
+													</a>
+
+													<a href="javascript:void(0);"
+													   class="btn btn-sm btn-danger delete-agent-btn"
+													   data-id="@agent.Id"
+													   data-username="@agent.UserName"
+													   style="border-radius: 3px;">
+														Delete
+													</a>
+												</div>
+											</div>
+										</div>
+									</div>
+								}
+							}
+						}
+						else
+						{
+							<div class="col-12">
+								<p class="text-muted">No agents yet...</p>
+							</div>
+						}
+					</div>
+				</div>
+			</div>
+		</div>
+
+		<!-- Right: Agent Form -->
+		<div class="col-md-4">
+			<div class="card">
+				<div class="card-header">
+					<h5>Agent Information Form</h5>
+				</div>
+				<div class="card-body" style="height: 543px; max-height: 543px; overflow-y: auto;">
+					<!-- Error Summary -->
+					@if (TempData["AgentError"] != null)
+					{
+						<div class="alert alert-danger" id="error-summary-agent">
+							@TempData["AgentError"]
+						</div>
+					}
+
+					<form asp-action="AddOrEditAgent" method="post" class="needs-validation" id="agentForm">
+						@Html.AntiForgeryToken()
+
+						<!-- Hidden ID for editing -->
+						<input type="hidden" asp-for="Agent.Id" id="AgentId" />
+
+						<div class="mb-1">
+							<label asp-for="Agent.UserName" class="form-label"></label>
+							<input asp-for="Agent.UserName" class="form-control" placeholder="Enter username" required id="Agent_UserName" />
+							<span asp-validation-for="Agent.UserName" class="text-danger small"></span>
+						</div>
+
+						<div class="mb-1">
+							<label asp-for="User.Email" class="form-label"></label>
+							<input asp-for="User.Email" class="form-control" placeholder="Enter email" required id="User_Email" />
+							<span asp-validation-for="User.Email" class="text-danger small"></span>
+						</div>
+
+						<div class="mb-1">
+							<label asp-for="Agent.Phone" class="form-label"></label>
+							<input asp-for="Agent.Phone" class="form-control" placeholder="Enter phone number" required id="Agent_Phone" />
+							<span asp-validation-for="Agent.Phone" class="text-danger small"></span>
+						</div>
+
+						<div class="mb-1">
+							<label asp-for="Password" class="form-label"></label>
+							<input asp-for="Password" type="password" class="form-control" placeholder="Enter password" required id="Password" />
+							<span asp-validation-for="Password" class="text-danger small"></span>
+						</div>
+
+						<div class="mb-3">
+							<label asp-for="ConfirmPassword" class="form-label"></label>
+							<input asp-for="ConfirmPassword" type="password" class="form-control" placeholder="Confirm password" required id="ConfirmPassword" />
+							<span asp-validation-for="ConfirmPassword" class="text-danger small"></span>
+						</div>
+
+						<button type="submit" class="btn btn-primary" id="submitBtn">Save Agent</button>
+						<button type="button" class="btn btn-secondary" id="resetBtn">Cancel</button>
+					</form>
+				</div>
+			</div>
+		</div>
+	</div>
+
+	<!-- Hidden forms for AJAX operations -->
+	<form id="deleteForm" asp-action="DeleteUserAndAgent" method="post" style="display: none;">
+		@Html.AntiForgeryToken()
+		<input type="hidden" id="deleteId" name="id" />
+	</form>
+
+	<form id="toggleStatusForm" asp-action="ToggleStatus" method="post" style="display: none;">
+		@Html.AntiForgeryToken()
+		<input type="hidden" id="toggleId" name="id" />
+	</form>
+
+	<!-- Scripts -->
+	<script src="~/lib/jquery/dist/jquery.min.js"></script>
+	<script src="~/lib/jquery-validation/dist/jquery.validate.min.js"></script>
+	<script src="~/lib/jquery-validation-unobtrusive/jquery.validate.unobtrusive.min.js"></script>
+	<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+
+	<script>
+		function filterAgents() {
+			let input = document.getElementById("searchInput").value.toLowerCase();
+			let statusFilter = document.getElementById("filterStatus").value.toLowerCase();
+			let cards = document.querySelectorAll(".agent-card-wrapper");
+
+			cards.forEach(card => {
+				let username = card.querySelector(".agent-username")?.innerText.toLowerCase() || "";
+				let email = card.querySelector(".agent-email")?.innerText.toLowerCase() || "";
+
+				// Get the status text from the card
+				let statusElement = card.querySelector(".agent-info p:nth-child(4) span");
+				let status = statusElement ? statusElement.innerText.toLowerCase() : "";
+
+				// Check if the card matches the search input and the selected status filter
+				let matchesSearch = username.includes(input) || email.includes(input);
+				let matchesStatus = (statusFilter === "" || status === statusFilter);
+
+				// Show or hide the card based on the filter results
+				card.style.display = (matchesSearch && matchesStatus) ? "" : "none";
+			});
+		}
+
+		// Event listeners for live filtering
+		document.getElementById("searchInput").addEventListener("input", filterAgents);
+		document.getElementById("filterStatus").addEventListener("change", filterAgents);
+	</script>
+</div>
+
+<div id="confirmationOverlay" class="confirmation-overlay" style="display: none;">
+	<div id="confirmationCard" class="confirmation-card">
+		<div id="confirmationHeader" class="card-header bg-danger text-white">
+			<h5 class="mb-0">
+				<i id="confirmationIcon" class="fas fa-exclamation-triangle"></i>
+				<span id="confirmationTitle">Confirm Deletion</span>
+			</h5>
+		</div>
+		<div class="card-body">
+			<p class="mb-3" id="confirmationMessage">
+				Are you sure you want to delete agent "<strong id="itemToDelete"></strong>"?
+			</p>
+			<p class="text-muted small mb-0" id="confirmationNote">
+				This action cannot be undone.
+			</p>
+		</div>
+		<div class="card-footer text-end">
+			<button type="button" class="btn btn-secondary me-2" id="cancelAction">Cancel</button>
+			<button type="button" class="btn btn-danger" id="confirmAction">Delete</button>
+		</div>
+	</div>
+</div>
+
+@section Scripts {
+	@{
+		await Html.RenderPartialAsync("_ValidationScriptsPartial");
+	}
+}
