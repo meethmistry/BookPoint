@@ -1,9 +1,266 @@
-﻿@{
-    ViewData["Title"] = "Customer Home";
+﻿@model BookPoint.Models.BooksCategoriesClass
+
+@{
+	var userId = Context.Session.GetInt32("UserId") ?? 0;
 }
+<script>
+	const currentUID = @userId;
+</script>
+<!DOCTYPE html>
+<html lang="en">
+<head>
+	<meta charset="UTF-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1.0">
+	<title>BooksPoint - Customer</title>
+	<link href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.2/css/bootstrap.min.css" rel="stylesheet">
+	<link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
+	<link rel="stylesheet" href="~/css/CustomerHome.css" asp-append-version="true" />
+	<script src="~/js/CustomerHome.js" asp-append-version="true"></script>
+</head>
+<body>
+	<!-- Content Wrapper (white background for all page content) -->
+	<div class="content-wrapper">
 
-<div style="display:flex; flex-direction:column; align-items:center; justify-content:center; height:100vh; text-align:center;">
-    <h2>Welcome to Customer Home Page</h2>
-    <p>You have successfully logged in.</p>
+		<!-- Header -->
+		<div class="header">
+			<div class="container-fluid px-8">
+				<div class="d-flex justify-content-between align-items-center">
+					<div class="logo-brand">
+						<div class="logo"><i class="fas fa-book-open"></i></div>
+						<div class="brand-name">BooksPoint</div>
+					</div>
+					<div class="nav-links">
+						<a href="#"><i class="fas fa-user"></i> Profile</a>
+						<a asp-controller="Cart" asp-action="Index">
+							<i class="fas fa-shopping-cart"></i> Cart
+						</a>
+						<a href="#"><i class="fas fa-box"></i> Orders</a>
+						<a href="#" id="logoutLink" class="text-danger">
+							<i class="fas fa-sign-out-alt"></i> Logout
+						</a>
+						<form id="logoutForm" asp-controller="Customer" asp-action="Logout" method="post" style="display:none;">
+							@Html.AntiForgeryToken()
+						</form>
+					</div>
+				</div>
+			</div>
+		</div>
 
-</div>
+		<!-- Main Content -->
+		<div class="main-content">
+			<div class="page-header d-flex justify-content-between align-items-center flex-wrap">
+
+				<div class="header-text d-flex flex-column justify-content-center">
+					<h5 class="page-title mb-0">Discover Amazing Books</h5>
+					<p class="page-subtitle mb-0 d-none d-md-block">Explore our curated collection of books</p>
+				</div>
+
+				<div class="search-form d-flex align-items-center mt-2 mt-md-0 position-relative">
+					<div class="d-flex w-100 search-wrapper">
+						<select class="form-select custom-select" id="categorySearch">
+							<option value="all">All</option>
+							@foreach (var category in Model.Categories)
+							{
+								<option value="@category.Id">@category.Name</option>
+							}
+						</select>
+						<input type="text" id="nameSearch" class="form-control" placeholder="Book name">
+						<button class="btn btn-primary" type="button">
+							<i class="fas fa-search"></i>
+						</button>
+					</div>
+				</div>
+			</div>
+
+			<div class="books-container scrollable-container">
+				<div class="books-grid">
+					@foreach (var book in Model.Books)
+					{
+						<div class="book-card-unified">
+							<div class="book-info-top">
+								<div class="book-cover-horizontal">
+									<img src="@book.CoverImagePath" alt="Book Cover for @book.BookName" />
+								</div>
+								<div class="book-details-horizontal">
+									<h5 class="book-title">@book.BookName</h5>
+									<p class="book-author">by @book.AuthorName</p>
+									<p class="book-category">@book.Category?.Name</p>
+									<p class="book-price">$@book.SalesPrice.ToString("0.00")</p>
+									<button class="btn btn-tertiary view-more-btn"
+											data-book-title="@book.BookName"
+											data-book-author="@book.AuthorName"
+											data-book-category="@book.Category?.Name"
+											data-book-price="$@book.SalesPrice"
+											data-book-image="@book.CoverImagePath"
+											data-book-description="@book.Description"
+											data-sample-pdf="@book.SamplePdfPath">
+										View More
+									</button>
+							
+								</div>
+							</div>
+
+							<div class="book-actions-bottom">
+								<div class="quantity-control">
+									<span class="qty-label">Quantity :-</span>
+									<div class="qty-box">
+										<button class="qty-btn-minus">-</button>
+										<input type="number" value="1" min="1" max="@book.Quantity" class="qty-input" readonly />
+										<button class="qty-btn-plus">+</button>
+									</div>
+								</div>
+								<button class="btn btn-primary">Buy Now</button>
+								<button class="btn btn-secondary" data-book-id="@book.Id">Add to Cart</button>
+							</div>
+						</div>
+					}
+				</div>
+			</div>
+
+
+		</div>
+
+
+	</div>
+	<!-- Cart Success Overlay -->
+	<div id="cartSuccessOverlay" class="confirmation-overlay" style="display: none;">
+		<div class="confirmation-card">
+			<!-- Header -->
+			<div class="card-header bg-success text-white">
+				<h5 class="mb-0">
+					<i class="fas fa-check-circle"></i>
+					Success
+				</h5>
+			</div>
+
+			<!-- Body -->
+			<div class="card-body text-center">
+				<p class="mb-3 fw-bold text-dark">
+					Book added to cart successfully!
+				</p>
+				<p class="text-muted small mb-0">You can continue shopping or view your cart.</p>
+			</div>
+
+			<!-- Footer -->
+			<div class="card-footer text-end">
+				<button type="button" class="btn btn-secondary me-2" id="continueShopping">
+					Continue Shopping
+				</button>
+				<button type="button" class="btn btn-success" asp-action="Index" asp-controller="Cart" id="goToCart">
+					Go to Cart
+				</button>
+			</div>
+		</div>
+	</div>
+
+
+	<!-- CONFIRMATION OVERLAY -->
+	<div id="confirmationOverlay" class="confirmation-overlay" style="display: none;">
+		<div id="logoutCard" class="confirmation-card">
+			<div class="card-header bg-danger text-white">
+				<h5 class="mb-0">
+					<i class="fas fa-exclamation-triangle"></i>
+					Confirm Logout
+				</h5>
+			</div>
+			<div class="card-body">
+				<p class="mb-3">Are you sure you want to <strong>Logout</strong>?</p>
+				<p class="text-muted small mb-0">You will be redirected to the Login/Register page.</p>
+			</div>
+			<div class="card-footer text-end">
+				<button type="button" class="btn btn-secondary me-2" id="cancelLogout">Cancel</button>
+				<button type="button" class="btn btn-danger" id="confirmLogout">Logout</button>
+			</div>
+		</div>
+	</div>
+
+
+
+
+	<!-- Book Details Modal -->
+	<div class="modal fade" id="bookDetailsModal" tabindex="-1" aria-hidden="true">
+		<div class="modal-dialog modal-lg">
+			<div class="modal-content">
+				<div class="modal-header">
+					<h5 class="modal-title"><i class="fas fa-book-open me-2"></i>Book Details</h5>
+					<button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+				</div>
+				<div class="modal-body">
+					<div class="row">
+						<div class="col-md-4 text-center">
+							<img id="modalBookImage" src="" alt="Book Cover" class="book-detail-cover mb-3">
+						</div>
+						<div class="col-md-8 book-detail-info">
+							<h2 id="modalBookTitle" class="book-detail-title"></h2>
+							<p id="modalBookAuthor" class="book-detail-author"></p>
+							<span id="modalBookCategory" class="book-detail-category"></span>
+							<div id="modalBookPrice" class="book-detail-price"></div>
+
+							<div id="samplePdfSection" class="sample-pdf-section" style="display:none;">
+								<h6><i class="fas fa-file-pdf me-2"></i>Sample Available</h6>
+								<a id="samplePdfLink" href="#" target="_blank" class="sample-pdf-link">
+									<i class="fas fa-download"></i> Download Sample PDF
+								</a>
+							</div>
+						</div>
+					</div>
+
+					<div class="book-description">
+						<h6><i class="fas fa-align-left me-2"></i>Description</h6>
+						<p id="modalBookDescription"></p>
+					</div>
+				</div>
+			</div>
+		</div>
+	</div>
+	
+
+
+	<!-- Profile Overlay -->
+	<div id="profileOverlay" class="profile-overlay">
+		<div class="profile-card">
+			<div class="card-header">
+				<h5 class="mb-0"><i class="fas fa-user"></i> My Profile</h5>
+			</div>
+			<div class="card-body">
+				<!-- Hidden UID -->
+				<input type="hidden" id="profileUID" />
+
+				<div class="form-group">
+					<label for="profileUserName">Username</label>
+					<input type="text" class="form-control" id="profileUserName" placeholder="Enter your name" />
+				</div>
+
+				<div class="form-group">
+					<label for="profileEmail">Email</label>
+					<p class="form-control-plaintext text-muted" id="profileEmail"></p>
+				</div>
+
+				<div class="form-group">
+					<label for="profilePhone">Phone</label>
+					<input type="text" class="form-control" id="profilePhone" placeholder="Enter your phone number" />
+				</div>
+
+				<div class="form-group">
+					<label for="profileAddress">Address</label>
+					<textarea class="form-control" id="profileAddress" rows="2" placeholder="Enter your address"></textarea>
+				</div>
+			</div>
+
+			<!-- 🔹 Message placeholder -->
+			<div id="profileMessage" class="text-center mb-2"></div>
+
+			<div class="card-footer">
+				<button type="button" class="btn btn-secondary me-2" id="cancelProfile">Cancel</button>
+				<button type="button" class="btn btn-primary" id="updateProfile">Update</button>
+			</div>
+
+		</div>
+	</div>
+
+
+
+	<script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.2/js/bootstrap.bundle.min.js"></script>
+
+</body>
+</html>

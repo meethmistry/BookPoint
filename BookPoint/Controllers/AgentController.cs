@@ -51,13 +51,10 @@ namespace BookPoint.Controllers
                 // Check for duplicate email
                 if (_dbContext.Users.Any(u => u.Email.ToLower() == vm.User.Email.ToLower()))
                 {
-                    if (Request.Headers["X-Requested-With"] == "XMLHttpRequest")
-                    {
-                        return Json(new { success = false, message = "Email already exists. Please use a different email." });
-                    }
-                    TempData["AgentError"] = "Email already exists. Please use a different email.";
-                    TempData["CurrentTab"] = "Delivery Agents";
-                    return RedirectToAction("Dashboard", "Dashboard");
+
+                    return Json(new { success = false, message = "Email already exists. Please use a different email." });
+
+
                 }
 
                 // Create User
@@ -93,13 +90,9 @@ namespace BookPoint.Controllers
                 // Check for duplicate email (excluding current user)
                 if (_dbContext.Users.Any(u => u.Email.ToLower() == vm.User.Email.ToLower() && u.Id != user!.Id))
                 {
-                    if (Request.Headers["X-Requested-With"] == "XMLHttpRequest")
-                    {
-                        return Json(new { success = false, message = "Email already exists. Please use a different email." });
-                    }
-                    TempData["AgentError"] = "Email already exists. Please use a different email.";
-                    TempData["CurrentTab"] = "Delivery Agents";
-                    return RedirectToAction("Dashboard", "Dashboard");
+
+                    return Json(new { success = false, message = "Email already exists. Please use a different email." });
+
                 }
 
                 if (user != null && agent != null)
@@ -118,13 +111,10 @@ namespace BookPoint.Controllers
                 }
             }
 
-            if (Request.Headers["X-Requested-With"] == "XMLHttpRequest")
-            {
-                return Json(new { success = true });
-            }
 
-            TempData["CurrentTab"] = "Delivery Agents";
-            return RedirectToAction("Dashboard", "Dashboard");
+            return Json(new { success = true });
+
+
         }
 
         [HttpPost]
@@ -134,11 +124,9 @@ namespace BookPoint.Controllers
             var agent = _dbContext.Agents.FirstOrDefault(a => a.Id == id);
             if (agent == null)
             {
-                if (Request.Headers["X-Requested-With"] == "XMLHttpRequest")
-                {
-                    return Json(new { success = false, message = "Agent not found." });
-                }
-                return NotFound();
+
+                return Json(new { success = false, message = "Agent not found." });
+
             }
 
             var user = _dbContext.Users.FirstOrDefault(u => u.Id == agent.UID);
@@ -149,13 +137,9 @@ namespace BookPoint.Controllers
                 _dbContext.SaveChanges();
             }
 
-            if (Request.Headers["X-Requested-With"] == "XMLHttpRequest")
-            {
-                return Json(new { success = true, isActive = user.IsActive });
-            }
 
-            TempData["CurrentTab"] = "Delivery Agents";
-            return RedirectToAction("Dashboard", "Dashboard");
+            return Json(new { success = true, isActive = user.IsActive });
+
         }
 
         [HttpPost]
@@ -165,11 +149,9 @@ namespace BookPoint.Controllers
             var agent = _dbContext.Agents.FirstOrDefault(a => a.Id == id);
             if (agent == null)
             {
-                if (Request.Headers["X-Requested-With"] == "XMLHttpRequest")
-                {
-                    return Json(new { success = false, message = "Agent not found." });
-                }
-                return NotFound();
+
+                return Json(new { success = false, message = "Agent not found." });
+
             }
 
             var user = _dbContext.Users.FirstOrDefault(u => u.Id == agent.UID);
@@ -182,13 +164,9 @@ namespace BookPoint.Controllers
 
             _dbContext.SaveChanges();
 
-            if (Request.Headers["X-Requested-With"] == "XMLHttpRequest")
-            {
-                return Json(new { success = true });
-            }
 
-            TempData["CurrentTab"] = "Delivery Agents";
-            return RedirectToAction("Dashboard", "Dashboard");
+            return Json(new { success = true });
+
         }
     }
 }

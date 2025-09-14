@@ -1,0 +1,605 @@
+﻿* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+body {
+    font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+    background: linear-gradient(135deg, #1e3a8a 0%, #3b82f6 50%, #0ea5e9 100%);
+    height: 100vh;
+    padding: 15px;
+}
+
+
+/* Header */
+.header {
+    background: rgba(255, 255, 255, 0.95);
+    backdrop-filter: blur(20px);
+    border-bottom: 1px solid rgba(255, 255, 255, 0.2);
+    padding: 15px 0;
+    padding-left: 20px !important;
+    padding-right: 100px !important;
+    position: sticky;
+    top: 0;
+    z-index: 100;
+    box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
+    border-radius: 4px;
+}
+
+.logo-brand {
+    display: flex;
+    align-items: center;
+    font-size: 28px;
+    font-weight: 800;
+    background: linear-gradient(135deg, #1e3a8a 0%, #3b82f6 50%, #0ea5e9 100%);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+}
+
+    .logo-brand .logo {
+        font-size: 32px;
+        margin-right: 12px;
+        color: #1e3a8a;
+    }
+
+.nav-links a {
+    color: #4a5568;
+    text-decoration: none;
+    margin-left: 25px;
+    font-weight: 600;
+    transition: all 0.3s ease;
+    position: relative;
+}
+
+    .nav-links a:hover {
+        color: #1e3a8a;
+        transform: translateY(-2px);
+    }
+
+    .nav-links a::after {
+        content: '';
+        position: absolute;
+        width: 0;
+        height: 2px;
+        bottom: -5px;
+        left: 0;
+        background: linear-gradient(90deg, #3b82f6 50%, #0ea5e9 100%);
+        transition: width 0.3s ease;
+    }
+
+    .nav-links a:hover::after {
+        width: 100%;
+    }
+
+.page-header {
+    background: #fff;
+    margin-top: 12px;
+    padding: 10px 15px; /* Reduced vertical padding */
+    border-radius: 4px;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+    width: 100%;
+}
+
+/* Title + Subtitle styling */
+.page-title {
+    font-size: 1.2rem; /* Reduced font size */
+    font-weight: 800;
+    background: linear-gradient(135deg, #1e3a8a 0%, #3b82f6 50%, #0ea5e9 100%);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+}
+
+.page-subtitle {
+    font-size: 0.85rem;
+    color: #666;
+}
+/* Search form */
+.search-form {
+    min-width: 40%;
+}
+
+.search-wrapper {
+    gap: 8px; /* Adds a small gap between elements */
+}
+
+.search-form .form-control,
+.search-form .form-select {
+    border: 1px solid #e0e0e0;
+    border-radius: 8px;
+    padding: 8px 12px;
+    font-size: 0.9rem;
+    transition: all 0.2s ease-in-out;
+}
+
+    .search-form .form-select:focus,
+    .search-form .form-control:focus {
+        border-color: #3b82f6;
+        box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.25);
+    }
+
+/* Add custom dropdown icon */
+.search-form .form-select {
+    -webkit-appearance: none;
+    -moz-appearance: none;
+    appearance: none;
+    background-image: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16'%3e%3cpath fill='none' stroke='%23343a40' stroke-linecap='round' stroke-linejoin='round' stroke-width='2' d='M2 5l6 6 6-6'/%3e%3c/svg%3e");
+    background-repeat: no-repeat;
+    background-position: right 0.75rem center;
+    background-size: 16px 12px;
+}
+
+.search-form .btn {
+    border-radius: 8px;
+    padding: 8px 12px;
+    background: linear-gradient(135deg, #1e3a8a, #3b82f6, #0ea5e9);
+    border: none;
+    /* The transition property is kept, but hover effect is removed below */
+    transition: all 0.3s ease;
+}
+
+    .search-form .btn:hover {
+        transform: none;
+        box-shadow: none;
+        background: linear-gradient(135deg, #1e3a8a, #3b82f6, #0ea5e9);
+    }
+
+.books-container.scrollable-container {
+    padding: 15px;
+    background-color: #ffffff;
+    border-radius: 4px;
+    margin-top: 15px;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.05);
+    max-height: 73vh;
+    min-height: 73vh;
+    overflow-y: auto;
+}
+
+/* The grid remains the same for the multi-column layout */
+.books-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(400px, 1fr));
+    gap: 20px;
+}
+
+/* Updated individual book card for vertical stacking of content */
+.book-card-unified {
+    background: #fdfdfd;
+    border: 1px solid #e9ecef;
+    border-radius: 4px;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+    display: flex;
+    flex-direction: column; /* Stacks the child containers vertically */
+    padding: 15px;
+    gap: 15px;
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+}
+
+    .book-card-unified:hover {
+        transform: translateY(-5px);
+        box-shadow: 0 10px 20px rgba(0,0,0,0.1);
+    }
+
+/* Container for the image and text details (horizontal) */
+.book-info-top {
+    display: flex;
+    gap: 15px;
+}
+
+/* Styling for the book cover image container */
+.book-cover-horizontal {
+    flex-shrink: 0;
+    width: 120px;
+    height: 180px; /* Set a fixed height to create a consistent aspect ratio */
+    display: flex;
+    align-items: center; /* Vertically centers the content */
+    justify-content: center; /* Horizontally centers the content */
+    overflow: hidden; /* Hides any part of the image that extends beyond the container */
+}
+
+    .book-cover-horizontal img {
+        width: 100%;
+        height: 100%;
+        object-fit: cover; /* **This is the key property.** It scales the image to fill the container while maintaining its aspect ratio. */
+        object-position: center; /* **This centers the image** within its container, ensuring no part is cropped unevenly. */
+        border-radius: 4px;
+    }
+
+/* Styling for the book's text details section */
+.book-details-horizontal {
+    flex-grow: 1;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    text-align: left;
+}
+
+/* Styling for the action buttons container (vertical) */
+.book-actions-bottom {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    margin-top: auto; /* Pushes the buttons to the bottom of the card */
+}
+
+/* The rest of the styling for titles, authors, prices, and buttons remains the same from the previous response */
+.book-title {
+    font-size: 1.1rem;
+    font-weight: 700;
+    color: #343a40;
+    margin-bottom: 5px;
+    line-height: 1.3;
+}
+
+.book-author, .book-category {
+    font-size: 0.9rem;
+    color: #6c757d;
+    margin-bottom: 3px;
+    font-style: normal;
+}
+
+.book-price {
+    font-size: 1rem;
+    font-weight: bold;
+    color: #007bff;
+    margin-top: 6px;
+}
+
+.btn {
+    border-radius: 4px;
+    padding: 8px 12px;
+    font-size: 0.8rem;
+    font-weight: 500;
+    transition: all 0.3s ease;
+    cursor: pointer;
+    border: none;
+    text-transform: uppercase;
+}
+
+.btn-primary {
+    background-color: #007bff;
+    color: #fff;
+}
+
+.btn-secondary {
+    background-color: #6c757d;
+    color: #fff;
+}
+
+.btn-tertiary {
+    background-color: transparent;
+    color: #007bff;
+    border: 1px solid #007bff;
+}
+
+.btn-primary:hover {
+    background-color: #0056b3;
+}
+
+.btn-secondary:hover {
+    background-color: #5a6268;
+}
+
+.btn-tertiary:hover {
+    background-color: #e9ecef;
+}
+
+
+/* Quantity Container */
+.quantity-control {
+    display: flex;
+    align-items: center;
+    /* Remove justify-content: space-between here, or adjust it */
+    gap: 12px;
+    margin-bottom: 12px;
+    border: 1px solid #dcdcdc;
+    border-radius: 6px;
+    background-color: #ffffff;
+    padding: 6px 12px;
+    font-size: 0.95rem;
+}
+
+/* Label stays at left */
+.qty-label {
+    font-size: 0.9rem;
+    font-weight: 500;
+    color: #555;
+    white-space: nowrap;
+    /* This makes the label take only the space it needs and aligns it to the start */
+    flex-shrink: 0;
+}
+
+/* Box for input + buttons (centered group) */
+.qty-box {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    flex-grow: 1; /* This makes the box take up the remaining space */
+    justify-content: center; /* This centers the content (buttons and input) within the available space of qty-box */
+}
+
+/* Quantity Buttons */
+.qty-btn-minus,
+.qty-btn-plus {
+    background-color: #007bff;
+    border: none;
+    color: #fff;
+    font-size: 1rem;
+    font-weight: bold;
+    width: 28px;
+    height: 28px;
+    border-radius: 2px;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: background 0.3s ease;
+}
+
+    .qty-btn-minus:hover,
+    .qty-btn-plus:hover {
+        background-color: #0056b3;
+    }
+
+/* Quantity Input */
+.qty-input {
+    width: 45px;
+    text-align: center;
+    font-size: 1rem;
+    font-weight: bold;
+    border: none;
+    outline: none;
+    color: #333;
+    background: transparent;
+}
+
+    /* Remove default arrows */
+    .qty-input::-webkit-outer-spin-button,
+    .qty-input::-webkit-inner-spin-button {
+        -webkit-appearance: none;
+        margin: 0;
+    }
+
+    .qty-input[type=number] {
+        -moz-appearance: textfield;
+    }
+
+    /* Add a style to make the input appear read-only */
+    .qty-input[readonly] {
+        cursor: default;
+        user-select: none;
+    }
+
+/* Modal Styles */
+.modal-content {
+    border-radius: 2px;
+    border: none;
+    box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+}
+
+.modal-header {
+    background: linear-gradient(135deg, #1e3a8a 0%, #3b82f6 50%, #0ea5e9 100%);
+    color: white;
+    border-radius: 2px 2px 0 0;
+    padding: 10px 20px;
+}
+
+.modal-title {
+    font-weight: 700;
+    font-size: 1.4rem;
+}
+
+.btn-close {
+    background: none;
+    border: none;
+    color: white;
+    font-size: 1.5rem;
+    opacity: 0.8;
+    transition: opacity 0.3s ease;
+}
+
+    .btn-close:hover {
+        opacity: 1;
+        color: white;
+    }
+
+.modal-body {
+    padding: 15px;
+}
+
+.book-detail-cover {
+    width: 200px;
+    height: 300px;
+    object-fit: cover;
+    border-radius: 2px;
+    box-shadow: 0 8px 25px rgba(0, 0, 0, 0.15);
+}
+
+.book-detail-info {
+    flex: 1;
+    padding-left: 25px;
+}
+
+.book-detail-title {
+    font-size: 1.8rem;
+    font-weight: 800;
+    color: #1e3a8a;
+    margin-bottom: 10px;
+    line-height: 1.2;
+}
+
+.book-detail-author {
+    font-size: 1.1rem;
+    color: #6c757d;
+    margin-bottom: 8px;
+    font-style: italic;
+}
+
+.book-detail-category {
+    display: inline-block;
+    background: linear-gradient(135deg, #e3f2fd, #bbdefb);
+    color: #1976d2;
+    padding: 6px 12px;
+    border-radius: 2px;
+    font-size: 0.9rem;
+    font-weight: 600;
+    margin-bottom: 15px;
+}
+
+.book-detail-price {
+    font-size: 1.5rem;
+    font-weight: bold;
+    color: #28a745;
+    margin-bottom: 20px;
+}
+
+.book-description {
+    background: #f8f9fa;
+    padding: 20px;
+    border-radius: 8px;
+    border-left: 4px solid #3b82f6;
+    margin: 20px 0;
+}
+
+    .book-description h6 {
+        color: #1e3a8a;
+        font-weight: 700;
+        margin-bottom: 10px;
+    }
+
+    .book-description p {
+        line-height: 1.6;
+        color: #495057;
+        margin-bottom: 0;
+    }
+
+.sample-pdf-section {
+    background: linear-gradient(135deg, #e8f4f8, #f0f9ff);
+    padding: 15px;
+    border-radius: 8px;
+    margin: 15px 0;
+    text-align: center;
+    border: 1px solid #b3e5fc;
+}
+
+.sample-pdf-link {
+    color: #1976d2;
+    text-decoration: none;
+    font-weight: 600;
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    transition: all 0.3s ease;
+}
+
+    .sample-pdf-link:hover {
+        color: #0d47a1;
+        transform: translateY(-2px);
+    }
+
+.modal-actions {
+    display: flex;
+    gap: 15px;
+    margin-top: 25px;
+}
+
+    .modal-actions .btn {
+        flex: 1;
+        padding: 12px;
+        font-size: 1rem;
+        font-weight: 600;
+        border-radius: 8px;
+    }
+
+
+.confirmation-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(0, 0, 0, 0.5);
+    z-index: 9999;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+.confirmation-card {
+    background: white;
+    border-radius: 8px;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    max-width: 400px;
+    width: 90%;
+    animation: slideIn 0.3s ease;
+}
+
+
+.card-header {
+    padding: 1rem;
+    border-bottom: 1px solid #dee2e6;
+    border-radius: 8px 8px 0 0;
+}
+
+.card-body {
+    padding: 1.5rem;
+}
+
+.card-footer {
+    padding: 1rem;
+    border-top: 1px solid #dee2e6;
+    border-radius: 0 0 8px 8px;
+    background-color: #f8f9fa;
+}
+
+/* Profile Overlay Styles */
+.profile-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(0, 0, 0, 0.5);
+    z-index: 9999;
+    display: none;
+    justify-content: center;
+    align-items: center;
+}
+
+.profile-card {
+    background: #fff;
+    border-radius: 4px;
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.15);
+    width: 85%;
+    max-width: 600px;
+    padding: 0px;
+    animation: slideIn 0.3s ease;
+}
+
+    .profile-card .card-header {
+        background-color: #007bff;
+        color: #fff;
+        padding: 1rem;
+        border-radius: 4px 4px 0 0;
+    }
+
+    .profile-card .card-body {
+        padding: 1.5rem;
+    }
+
+    .profile-card .form-group {
+        margin-bottom: 1rem;
+    }
+
+    .profile-card .form-control[readonly] {
+        background-color: #f8f9fa;
+        cursor: not-allowed;
+        border: 1px solid #dee2e6;
+    }
+
+    .profile-card .card-footer {
+        text-align: right;
+        padding: 1rem;
+        background: #f8f9fa;
+        border-radius: 0 0 10px 10px;
+    }

@@ -36,13 +36,9 @@ namespace BookPoint.Controllers
             if (_dbContext.Users.Any(c => c.Email.ToLower() == model.Email.ToLower()))
             {
                 var errorMessage = "Email already exists. Please choose a different email.";
-                if (Request.Headers["X-Requested-With"] == "XMLHttpRequest")
-                {
-                    return Json(new { success = false, message = errorMessage });
-                }
-                ViewBag.RegisterError = errorMessage;
-                ViewBag.CurrentView = "register";
-                return View("LoginRegister", new AuthViewModel { Login = new LoginViewModel(), Register = model });
+
+                return Json(new { success = false, message = errorMessage });
+
             }
 
             try
@@ -72,25 +68,17 @@ namespace BookPoint.Controllers
 
                 _dbContext.Customers.Add(customer);
                 _dbContext.SaveChanges();
+                HttpContext.Session.SetInt32("UserId", user.Id);
+                return Json(new { success = true, redirectUrl = Url.Action("Index", "Customer") });
 
-                // Return success response
-                if (Request.Headers["X-Requested-With"] == "XMLHttpRequest")
-                {
-                    return Json(new { success = true, redirectUrl = Url.Action("Index", "Customer") });
-                }
 
-                return RedirectToAction("Index", "Customer");
             }
             catch (Exception)
             {
                 var errorMessage = "Something went wrong during registration. Please try again.";
-                if (Request.Headers["X-Requested-With"] == "XMLHttpRequest")
-                {
-                    return Json(new { success = false, message = errorMessage });
-                }
-                ViewBag.RegisterError = errorMessage;
-                ViewBag.CurrentView = "register";
-                return View("LoginRegister", new AuthViewModel { Login = new LoginViewModel(), Register = model });
+
+                return Json(new { success = false, message = errorMessage });
+
             }
         }
 
@@ -112,32 +100,22 @@ namespace BookPoint.Controllers
                         redirectUrl = Url.Action("Index", "Customer");
                     else if (user.Role == "Admin")
                         redirectUrl = Url.Action("Dashboard", "Dashboard");
+                    HttpContext.Session.SetInt32("UserId", user.Id);
+                    return Json(new { success = true, redirectUrl = redirectUrl });
 
-                    if (Request.Headers["X-Requested-With"] == "XMLHttpRequest")
-                    {
-                        return Json(new { success = true, redirectUrl = redirectUrl });
-                    }
 
-                    return Redirect(redirectUrl);
                 }
 
                 var errorMessage = "Invalid email or password.";
-                if (Request.Headers["X-Requested-With"] == "XMLHttpRequest")
-                {
-                    return Json(new { success = false, message = errorMessage });
-                }
-                ViewBag.LoginError = errorMessage;
-                return View("LoginRegister", vm);
+                return Json(new { success = false, message = errorMessage });
+
             }
             catch (Exception)
             {
                 var errorMessage = "Something went wrong during login. Please try again.";
-                if (Request.Headers["X-Requested-With"] == "XMLHttpRequest")
-                {
-                    return Json(new { success = false, message = errorMessage });
-                }
-                ViewBag.LoginError = errorMessage;
-                return View("LoginRegister", vm);
+
+                return Json(new { success = false, message = errorMessage });
+
             }
         }
     }

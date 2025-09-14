@@ -1,0 +1,448 @@
+﻿body {
+    font-family: 'Inter', sans-serif;
+    background: linear-gradient(135deg, #1e3a8a 0%, #3b82f6 50%, #0ea5e9 100%);
+    height: 100vh;
+    padding: 15px;
+}
+
+.header .container-fluid {
+    padding-left: 25px !important;
+    padding-right: 25px !important;
+}
+
+
+.header a {
+    color: black !important;
+    text-decoration: none;
+}
+
+.cart-title {
+    font-size: 1.2rem;
+    font-weight: 400;
+    color: #222;
+}
+
+.books-container.scrollable-container {
+    padding: 15px;
+    background-color: #ffffff;
+    border-radius: 4px;
+    margin-top: 15px;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.05);
+    max-height: 86vh;
+    min-height: 86vh;
+    overflow-y: auto;
+}
+
+/* The grid remains the same for the multi-column layout */
+.books-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(400px, 1fr));
+    gap: 20px;
+}
+
+/* Updated individual book card for vertical stacking of content */
+.book-card-unified {
+    background: #fdfdfd;
+    border: 1px solid #e9ecef;
+    border-radius: 4px;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+    display: flex;
+    flex-direction: column; /* Stacks the child containers vertically */
+    padding: 15px;
+    gap: 15px;
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+}
+
+    .book-card-unified:hover {
+        transform: translateY(-5px);
+        box-shadow: 0 10px 20px rgba(0,0,0,0.1);
+    }
+
+/* Container for the image and text details (horizontal) */
+.book-info-top {
+    display: flex;
+    gap: 15px;
+}
+
+/* Styling for the book cover image container */
+.book-cover-horizontal {
+    flex-shrink: 0;
+    width: 120px;
+    height: 180px; /* Set a fixed height to create a consistent aspect ratio */
+    display: flex;
+    align-items: center; /* Vertically centers the content */
+    justify-content: center; /* Horizontally centers the content */
+    overflow: hidden; /* Hides any part of the image that extends beyond the container */
+}
+
+    .book-cover-horizontal img {
+        width: 100%;
+        height: 100%;
+        object-fit: cover; /* **This is the key property.** It scales the image to fill the container while maintaining its aspect ratio. */
+        object-position: center; /* **This centers the image** within its container, ensuring no part is cropped unevenly. */
+        border-radius: 4px;
+    }
+
+/* Styling for the book's text details section */
+.book-details-horizontal {
+    flex-grow: 1;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    text-align: left;
+}
+
+/* Styling for the action buttons container (vertical) */
+.book-actions-bottom {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    margin-top: auto; /* Pushes the buttons to the bottom of the card */
+}
+
+/* The rest of the styling for titles, authors, prices, and buttons remains the same from the previous response */
+.book-title {
+    font-size: 1.1rem;
+    font-weight: 700;
+    color: #343a40;
+    margin-bottom: 5px;
+    line-height: 1.3;
+}
+
+.book-author, .book-category {
+    font-size: 0.9rem;
+    color: #6c757d;
+    margin-bottom: 3px;
+    font-style: normal;
+}
+
+.book-price {
+    font-size: 1rem;
+    font-weight: bold;
+    color: #007bff;
+    margin-top: 6px;
+}
+
+.btn {
+    border-radius: 4px;
+    padding: 8px 12px;
+    font-size: 0.8rem;
+    font-weight: 500;
+    transition: all 0.3s ease;
+    cursor: pointer;
+    border: none;
+    text-transform: uppercase;
+}
+
+.btn-primary {
+    background-color: #007bff;
+    color: #fff;
+}
+
+.btn-secondary {
+    background-color: #6c757d;
+    color: #fff;
+}
+
+.btn-tertiary {
+    background-color: transparent;
+    color: #007bff;
+    border: 1px solid #007bff;
+}
+
+.btn-primary:hover {
+    background-color: #0056b3;
+}
+
+.btn-secondary:hover {
+    background-color: #5a6268;
+}
+
+.btn-tertiary:hover {
+    background-color: #e9ecef;
+}
+
+
+/* Quantity Container */
+.quantity-control {
+    display: flex;
+    align-items: center;
+    /* Remove justify-content: space-between here, or adjust it */
+    gap: 12px;
+    margin-bottom: 12px;
+    border: 1px solid #dcdcdc;
+    border-radius: 6px;
+    background-color: #ffffff;
+    padding: 6px 12px;
+    font-size: 0.95rem;
+}
+
+/* Label stays at left */
+.qty-label {
+    font-size: 0.9rem;
+    font-weight: 500;
+    color: #555;
+    white-space: nowrap;
+    /* This makes the label take only the space it needs and aligns it to the start */
+    flex-shrink: 0;
+}
+
+/* Box for input + buttons (centered group) */
+.qty-box {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    flex-grow: 1; /* This makes the box take up the remaining space */
+    justify-content: center; /* This centers the content (buttons and input) within the available space of qty-box */
+}
+
+/* Quantity Buttons */
+.qty-btn-minus,
+.qty-btn-plus {
+    background-color: #007bff;
+    border: none;
+    color: #fff;
+    font-size: 1rem;
+    font-weight: bold;
+    width: 28px;
+    height: 28px;
+    border-radius: 2px;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: background 0.3s ease;
+}
+
+    .qty-btn-minus:hover,
+    .qty-btn-plus:hover {
+        background-color: #0056b3;
+    }
+
+/* Quantity Input */
+.qty-input {
+    width: 45px;
+    text-align: center;
+    font-size: 1rem;
+    font-weight: bold;
+    border: none;
+    outline: none;
+    color: #333;
+    background: transparent;
+}
+
+    /* Remove default arrows */
+    .qty-input::-webkit-outer-spin-button,
+    .qty-input::-webkit-inner-spin-button {
+        -webkit-appearance: none;
+        margin: 0;
+    }
+
+    .qty-input[type=number] {
+        -moz-appearance: textfield;
+    }
+
+    /* Add a style to make the input appear read-only */
+    .qty-input[readonly] {
+        cursor: default;
+        user-select: none;
+    }
+
+/* Modal Styles */
+.modal-content {
+    border-radius: 2px;
+    border: none;
+    box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+}
+
+.modal-header {
+    background: linear-gradient(135deg, #1e3a8a 0%, #3b82f6 50%, #0ea5e9 100%);
+    color: white;
+    border-radius: 2px 2px 0 0;
+    padding: 10px 20px;
+}
+
+.modal-title {
+    font-weight: 700;
+    font-size: 1.4rem;
+}
+
+.btn-close {
+    background: none;
+    border: none;
+    color: white;
+    font-size: 1.5rem;
+    opacity: 0.8;
+    transition: opacity 0.3s ease;
+}
+
+    .btn-close:hover {
+        opacity: 1;
+        color: white;
+    }
+
+.modal-body {
+    padding: 15px;
+}
+
+.book-detail-cover {
+    width: 200px;
+    height: 300px;
+    object-fit: cover;
+    border-radius: 2px;
+    box-shadow: 0 8px 25px rgba(0, 0, 0, 0.15);
+}
+
+.book-detail-info {
+    flex: 1;
+    padding-left: 25px;
+}
+
+.book-detail-title {
+    font-size: 1.8rem;
+    font-weight: 800;
+    color: #1e3a8a;
+    margin-bottom: 10px;
+    line-height: 1.2;
+}
+
+.book-detail-author {
+    font-size: 1.1rem;
+    color: #6c757d;
+    margin-bottom: 8px;
+    font-style: italic;
+}
+
+.book-detail-category {
+    display: inline-block;
+    background: linear-gradient(135deg, #e3f2fd, #bbdefb);
+    color: #1976d2;
+    padding: 6px 12px;
+    border-radius: 2px;
+    font-size: 0.9rem;
+    font-weight: 600;
+    margin-bottom: 15px;
+}
+
+.book-detail-price {
+    font-size: 1.5rem;
+    font-weight: bold;
+    color: #28a745;
+    margin-bottom: 20px;
+}
+
+.book-description {
+    background: #f8f9fa;
+    padding: 20px;
+    border-radius: 8px;
+    border-left: 4px solid #3b82f6;
+    margin: 20px 0;
+}
+
+    .book-description h6 {
+        color: #1e3a8a;
+        font-weight: 700;
+        margin-bottom: 10px;
+    }
+
+    .book-description p {
+        line-height: 1.6;
+        color: #495057;
+        margin-bottom: 0;
+    }
+
+.sample-pdf-section {
+    background: linear-gradient(135deg, #e8f4f8, #f0f9ff);
+    padding: 15px;
+    border-radius: 8px;
+    margin: 15px 0;
+    text-align: center;
+    border: 1px solid #b3e5fc;
+}
+
+.sample-pdf-link {
+    color: #1976d2;
+    text-decoration: none;
+    font-weight: 600;
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    transition: all 0.3s ease;
+}
+
+    .sample-pdf-link:hover {
+        color: #0d47a1;
+        transform: translateY(-2px);
+    }
+
+.modal-actions {
+    display: flex;
+    gap: 15px;
+    margin-top: 25px;
+}
+
+    .modal-actions .btn {
+        flex: 1;
+        padding: 12px;
+        font-size: 1rem;
+        font-weight: 600;
+        border-radius: 8px;
+    }
+
+
+
+.confirmation-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(0, 0, 0, 0.5);
+    z-index: 9999;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+/* Fullscreen semi-transparent overlay */
+#removeConfirmOverlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0,0,0,0.5);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    z-index: 1050;
+}
+
+/* Card styling */
+.removeConfirmCard {
+    background: white;
+    border-radius: 2px;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.2);
+    max-width: 400px;
+    width: 90%;
+    animation: slideIn 0.3s ease;
+}
+
+    /* Header */
+    .removeConfirmCard .card-header {
+        padding: 1rem;
+        border-bottom: 1px solid #dee2e6;
+        border-radius: 2px 2px 0 0;
+    }
+
+    /* Body */
+    .removeConfirmCard .card-body {
+        padding: 1.5rem;
+    }
+
+    /* Footer */
+    .removeConfirmCard .card-footer {
+        padding: 1rem;
+        border-top: 1px solid #dee2e6;
+        border-radius: 0 0 2px 2px;
+        background-color: #f8f9fa;
+    }

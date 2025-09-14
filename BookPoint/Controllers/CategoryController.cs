@@ -26,14 +26,10 @@ namespace BookPoint.Controllers
         {
             if (_dbContext.Categories.Any(c => c.Name.ToLower() == category.Name.ToLower() && c.Id != category.Id))
             {
-                if (Request.Headers["X-Requested-With"] == "XMLHttpRequest")
-                {
-                    return Json(new { success = false, message = "Category already exists. Please use another name." });
-                }
 
-                TempData["CategoryError"] = "Category already exists. Please use another name.";
-                TempData["CurrentTab"] = "Categories";
-                return RedirectToAction("Dashboard", "Dashboard");
+                return Json(new { success = false, message = "Category already exists. Please use another name." });
+
+
             }
 
             if (category.Id == 0)
@@ -43,13 +39,9 @@ namespace BookPoint.Controllers
 
             _dbContext.SaveChanges();
 
-            if (Request.Headers["X-Requested-With"] == "XMLHttpRequest")
-            {
-                return Json(new { success = true });
-            }
+            return Json(new { success = true });
 
-            TempData["CurrentTab"] = "Categories";
-            return RedirectToAction("Dashboard", "Dashboard");
+
         }
 
 
@@ -61,23 +53,18 @@ namespace BookPoint.Controllers
             var entity = _dbContext.Categories.Find(id);
             if (entity == null)
             {
-                if (Request.Headers["X-Requested-With"] == "XMLHttpRequest")
-                {
-                    return Json(new { success = false, message = "Category not found." });
-                }
-                return NotFound();
+
+                return Json(new { success = false, message = "Category not found." });
+
             }
 
             _dbContext.Categories.Remove(entity);
             _dbContext.SaveChanges();
 
-            if (Request.Headers["X-Requested-With"] == "XMLHttpRequest")
-            {
-                return Json(new { success = true });
-            }
 
-            TempData["CurrentTab"] = "Categories";
-            return RedirectToAction("Dashboard", "Dashboard");
+            return Json(new { success = true });
+
+
         }
 
     }
